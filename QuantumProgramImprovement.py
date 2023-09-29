@@ -5,6 +5,7 @@ from jmetal.algorithm.singleobjective.genetic_algorithm import GeneticAlgorithm
 from jmetal.core.operator import Mutation, Crossover
 from jmetal.core.problem import FloatProblem
 from jmetal.core.solution import FloatSolution
+import subprocess
 
 
 # Define the Problem
@@ -57,9 +58,25 @@ class ProgramImprovementProblem(FloatProblem):
             return program
 
     def execute_program(self, program: str):
-        # call Ocaml
-        # need to come up with a test set
-        return accuracy  # the number of correct output / total
+        # Example
+        ocaml_program = "my_program.ml"
+        test_set = "(3, 4)"
+        target_output = "7"
+
+        try:
+            ocaml_command = f'ocaml {ocaml_program} "{test_set}"'
+
+            # Execute the OCaml program and receive its output
+            result = subprocess.check_output(ocaml_command, shell=True, text=True)
+
+            # Compare the program's output with the target output
+            accuracy = 1 if result.strip() == target_output.strip() else 0
+
+            return accuracy
+
+        except subprocess.CalledProcessError as e:
+            print("Error:", e)
+            return 0  # Return 0 accuracy in case of an error
 
     def is_feasible(self, program: str):
         try:
